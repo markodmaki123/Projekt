@@ -5,6 +5,7 @@ import cv2
 import io
 import time
 
+heartrate = None
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FPS, 30)
 # Image crop
@@ -20,6 +21,7 @@ ax = fig.add_subplot(111)
 
 while True:
     # Capture frame-by-frame
+    global heartrate
     ret, frame = cap.read()
     frame = imutils.resize(frame, width=1920)
     if not ret:  # Ce ni vrno true, rece da je bila napaka in zakljuci
@@ -27,6 +29,7 @@ while True:
         break
     img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     crop_img = img[y:y + h, x:x + w]
+    heartrate = crop_img
     # Update the data
     heartbeat_values = heartbeat_values[1:] + [np.average(crop_img)]
     heartbeat_times = heartbeat_times[1:] + [time.time()]
@@ -44,6 +47,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
+cv2.imwrite("heart rate", heartrate)
 cap.release()
 cv2.destroyAllWindows()
